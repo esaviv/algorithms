@@ -1,3 +1,9 @@
+# ID успешной посылки - 86523824
+
+class ErrorException(Exception):
+    pass
+
+
 class Deque():
     def __init__(self, n) -> None:
         self.queue = [None] * n
@@ -11,97 +17,77 @@ class Deque():
 
     def push_back(self, value):
         if self.size != self.max_n:
-            self.queue[self.head] = value
-            self.head = (self.head - 1) % self.max_n
-            self.size += 1
-
-    def push_front(self, value):
-        """Готовая функция."""
-        if self.size != self.max_n:
             self.queue[self.tail] = value
             self.tail = (self.tail + 1) % self.max_n
             self.size += 1
+        else:
+            raise ErrorException
+
+    def push_front(self, value):
+        if self.size != self.max_n:
+            self.queue[self.head - 1] = value
+            self.head = (self.head - 1) % self.max_n
+            self.size += 1
+        else:
+            raise ErrorException
 
     def pop_front(self):
         if self.is_empty():
-            return None
-        print(self.tail)
-        x = self.queue[self.tail]
-        self.queue[self.tail] = None
-        self.tail = (self.tail - 1) % self.max_n
-        self.size -= 1
-        print(x)
-
-    def pop_back(self):
-        """Готовая функция."""
-        if self.is_empty():
-            return None
+            raise ErrorException
         x = self.queue[self.head]
         self.queue[self.head] = None
         self.head = (self.head + 1) % self.max_n
         self.size -= 1
         print(x)
 
-# q = Deque(4)
-# q.push_front(861)
-# q.push_front(-819)
-# print(q.queue)
-# q.pop_back()
-# q.pop_back()
+    def pop_back(self):
+        if self.is_empty():
+            raise ErrorException
+        x = self.queue[self.tail - 1]
+        self.queue[self.tail - 1] = None
+        self.tail = (self.tail - 1) % self.max_n
+        self.size -= 1
+        print(x)
 
 
-q = Deque(7)
-q.push_front(-855)
-q.push_front(0)
-q.pop_back()
-q.pop_back()
-q.push_back(844)
-print(q.queue)
-q.pop_back()
-q.push_back(823)
-print(q.queue)
-
-# q = Deque(6)
-# q.push_front(-201)
-# q.push_back(959)
-# q.push_back(102)
-# q.push_front(20)
-# print(q.queue)
-# q.pop_front()
-# q.pop_back()
-# print(q.queue)
-
-# q = Deque(8)
-# q.push_back(1)
-# q.push_back(-1)
-# q.push_back(0)
-# q.push_back(11)
-# assert q.queue == [1, -1, 0, 11, None, None, None, None]
-# q.pop_front()
-# assert q.queue == [None, -1, 0, 11, None, None, None, None]
+input_data = """4
+2
+push_front -201
+push_back 959
+push_back 102
+push_front 20"""
 
 
-# q = Deque(8)
-# q.push_front(1)
-# q.push_front(-1)
-# q.push_front(0)
-# q.push_front(11)
-# assert q.queue == [None, None, None, None, 11, 0, -1, 1]
-# q.pop_back()
-# assert q.queue == [None, None, None, None, 11, 0, -1, None]
+def solution():
+    deque = Deque(max_deque_size)
 
-# q = Deque(5)
-# q.push_front(1)
-# q.push_front(2)
-# q.push_front(3)
-# print(q.queue)
-# q.push_back(1)
-# q.push_back(2)
-# q.push_back(3)
-# print(q.queue)
-# q.pop_front()
-# q.pop_front()
-# print(q.queue)
-# q.pop_back()
-# q.pop_back()
-# print(q.queue)
+    methods = {
+        'push_back': deque.push_back,
+        'push_front': deque.push_front,
+        'pop_front': deque.pop_front,
+        'pop_back': deque.pop_back
+    }
+
+    for command in commands:
+        if 'push' in command:
+            command, num = command.split()
+            try:
+                methods.get(command)(int(num))
+            except ErrorException:
+                print('error')
+        else:
+            try:
+                methods.get(command)()
+            except ErrorException:
+                print('error')
+
+
+if __name__ == '__main__':
+    # count_command = int(input())
+    # max_deque_size = int(input())
+    # commands = [input() for _ in range(count_command)]
+    data = input_data.split('\n')
+    count_command = int(data[0])
+    max_deque_size = int(data[1])
+    commands = data[2:]
+    solution()
