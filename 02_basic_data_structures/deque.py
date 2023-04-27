@@ -1,8 +1,4 @@
-# ID успешной посылки - 86523824
-
-class ErrorException(Exception):
-    pass
-
+# ID успешной посылки - 86533473
 
 class Deque():
     def __init__(self, n) -> None:
@@ -21,7 +17,7 @@ class Deque():
             self.tail = (self.tail + 1) % self.max_n
             self.size += 1
         else:
-            raise ErrorException
+            raise OverflowError
 
     def push_front(self, value):
         if self.size != self.max_n:
@@ -29,11 +25,11 @@ class Deque():
             self.head = (self.head - 1) % self.max_n
             self.size += 1
         else:
-            raise ErrorException
+            raise OverflowError
 
     def pop_front(self):
         if self.is_empty():
-            raise ErrorException
+            raise IndexError
         x = self.queue[self.head]
         self.queue[self.head] = None
         self.head = (self.head + 1) % self.max_n
@@ -42,7 +38,7 @@ class Deque():
 
     def pop_back(self):
         if self.is_empty():
-            raise ErrorException
+            raise IndexError
         x = self.queue[self.tail - 1]
         self.queue[self.tail - 1] = None
         self.tail = (self.tail - 1) % self.max_n
@@ -50,12 +46,14 @@ class Deque():
         print(x)
 
 
-input_data = """4
-2
-push_front -201
-push_back 959
-push_back 102
-push_front 20"""
+# input_data = """6
+# 6
+# push_front -201
+# push_back 959
+# push_back 102
+# push_front 20
+# pop_front
+# pop_back"""
 
 
 def solution():
@@ -73,21 +71,21 @@ def solution():
             command, num = command.split()
             try:
                 methods.get(command)(int(num))
-            except ErrorException:
+            except OverflowError:
                 print('error')
         else:
             try:
                 methods.get(command)()
-            except ErrorException:
+            except IndexError:
                 print('error')
 
 
 if __name__ == '__main__':
-    # count_command = int(input())
-    # max_deque_size = int(input())
-    # commands = [input() for _ in range(count_command)]
-    data = input_data.split('\n')
-    count_command = int(data[0])
-    max_deque_size = int(data[1])
-    commands = data[2:]
+    count_command = int(input())
+    max_deque_size = int(input())
+    commands = [input() for _ in range(count_command)]
+    # data = input_data.split('\n')
+    # count_command = int(data[0])
+    # max_deque_size = int(data[1])
+    # commands = data[2:]
     solution()
