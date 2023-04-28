@@ -1,9 +1,17 @@
-# ID успешной посылки - 86533473
+# ID успешной посылки - 86611401
 
-class Deque():
-    def __init__(self, n) -> None:
-        self.queue = [None] * n
-        self.max_n = n
+class EmptyException(IndexError):
+    pass
+
+
+class FullException(IndexError):
+    pass
+
+
+class Deque:
+    def __init__(self, max_deque_size) -> None:
+        self.elements = [None] * max_deque_size
+        self.max_size = max_deque_size
         self.head = 0
         self.tail = 0
         self.size = 0
@@ -11,81 +19,69 @@ class Deque():
     def is_empty(self):
         return self.size == 0
 
-    def push_back(self, value):
-        if self.size != self.max_n:
-            self.queue[self.tail] = value
-            self.tail = (self.tail + 1) % self.max_n
-            self.size += 1
+    def is_full(self):
+        return self.size >= self.max_size
+
+    def get_index(self, attribute, is_sum):
+        if is_sum:
+            return (attribute + 1) % self.max_size
         else:
-            raise OverflowError
+            return (attribute - 1) % self.max_size
+
+    def push_back(self, value):
+        if self.is_full():
+            raise FullException(
+                'В деке уже находится максимальное число элементов.'
+            )
+        self.elements[self.tail] = value
+        self.tail = self.get_index(self.tail, True)
+        self.size += 1
 
     def push_front(self, value):
-        if self.size != self.max_n:
-            self.queue[self.head - 1] = value
-            self.head = (self.head - 1) % self.max_n
-            self.size += 1
-        else:
-            raise OverflowError
+        if self.is_full():
+            raise FullException(
+                'В деке уже находится максимальное число элементов.'
+            )
+        self.elements[self.head - 1] = value
+        self.head = self.get_index(self.head, False)
+        self.size += 1
 
     def pop_front(self):
         if self.is_empty():
-            raise IndexError
-        x = self.queue[self.head]
-        self.queue[self.head] = None
-        self.head = (self.head + 1) % self.max_n
+            raise EmptyException('Дек пуст.')
+        pop_element = self.elements[self.head]
+        self.head = self.get_index(self.head, True)
         self.size -= 1
-        print(x)
+        return pop_element
 
     def pop_back(self):
         if self.is_empty():
-            raise IndexError
-        x = self.queue[self.tail - 1]
-        self.queue[self.tail - 1] = None
-        self.tail = (self.tail - 1) % self.max_n
+            raise EmptyException('Дек пуст.')
+        pop_element = self.elements[self.tail - 1]
+        self.tail = self.get_index(self.tail, False)
         self.size -= 1
-        print(x)
+        return pop_element
 
 
-# input_data = """6
-# 6
-# push_front -201
-# push_back 959
-# push_back 102
-# push_front 20
-# pop_front
-# pop_back"""
-
-
-def solution():
+def get_result():
     deque = Deque(max_deque_size)
-
-    methods = {
-        'push_back': deque.push_back,
-        'push_front': deque.push_front,
-        'pop_front': deque.pop_front,
-        'pop_back': deque.pop_back
-    }
-
+    result = []
     for command in commands:
-        if 'push' in command:
-            command, num = command.split()
-            try:
-                methods.get(command)(int(num))
-            except OverflowError:
-                print('error')
+        command, *num = command.split()
+        try:
+            value = getattr(deque, command)(*num)
+        except FullException:
+            result.append('error')
+        except EmptyException:
+            result.append('error')
         else:
-            try:
-                methods.get(command)()
-            except IndexError:
-                print('error')
+            if value:
+                result.append(value)
+    return result
 
 
 if __name__ == '__main__':
     count_command = int(input())
     max_deque_size = int(input())
     commands = [input() for _ in range(count_command)]
-    # data = input_data.split('\n')
-    # count_command = int(data[0])
-    # max_deque_size = int(data[1])
-    # commands = data[2:]
-    solution()
+    print('\n'.join(get_result()))
