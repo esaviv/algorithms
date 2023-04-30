@@ -1,34 +1,35 @@
-# ID успешной посылки - 86611401
+# ID успешной посылки - 86649169
 
-class EmptyException(IndexError):
+from typing import List
+
+
+class EmptyException(Exception):
     pass
 
 
-class FullException(IndexError):
+class FullException(Exception):
     pass
 
 
 class Deque:
-    def __init__(self, max_deque_size) -> None:
+    def __init__(self, max_deque_size: int) -> None:
         self.elements = [None] * max_deque_size
         self.max_size = max_deque_size
         self.head = 0
         self.tail = 0
         self.size = 0
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return self.size == 0
 
-    def is_full(self):
+    def is_full(self) -> bool:
         return self.size >= self.max_size
 
-    def get_index(self, attribute, is_sum):
-        if is_sum:
-            return (attribute + 1) % self.max_size
-        else:
-            return (attribute - 1) % self.max_size
+    def get_index(self, attribute: int, is_sum: bool) -> int:
+        index = (attribute + 1) % self.max_size if is_sum else (attribute - 1) % self.max_size
+        return index
 
-    def push_back(self, value):
+    def push_back(self, value: int) -> None:
         if self.is_full():
             raise FullException(
                 'В деке уже находится максимальное число элементов.'
@@ -37,7 +38,7 @@ class Deque:
         self.tail = self.get_index(self.tail, True)
         self.size += 1
 
-    def push_front(self, value):
+    def push_front(self, value: int) -> None:
         if self.is_full():
             raise FullException(
                 'В деке уже находится максимальное число элементов.'
@@ -46,7 +47,7 @@ class Deque:
         self.head = self.get_index(self.head, False)
         self.size += 1
 
-    def pop_front(self):
+    def pop_front(self) -> int:
         if self.is_empty():
             raise EmptyException('Дек пуст.')
         pop_element = self.elements[self.head]
@@ -54,7 +55,7 @@ class Deque:
         self.size -= 1
         return pop_element
 
-    def pop_back(self):
+    def pop_back(self) -> int:
         if self.is_empty():
             raise EmptyException('Дек пуст.')
         pop_element = self.elements[self.tail - 1]
@@ -63,16 +64,14 @@ class Deque:
         return pop_element
 
 
-def get_result():
+def get_result() -> List[int]:
     deque = Deque(max_deque_size)
     result = []
     for command in commands:
         command, *num = command.split()
         try:
             value = getattr(deque, command)(*num)
-        except FullException:
-            result.append('error')
-        except EmptyException:
+        except (FullException, EmptyException):
             result.append('error')
         else:
             if value:

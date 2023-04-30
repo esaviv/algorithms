@@ -1,4 +1,4 @@
-# ID успешной посылки - 86607174
+# ID успешной посылки - 86649257
 
 from operator import sub, add, floordiv, mul
 
@@ -7,7 +7,7 @@ class Stack:
     def __init__(self) -> None:
         self.items = []
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return len(self.items) == 0
 
     def push(self, item: int) -> None:
@@ -15,7 +15,7 @@ class Stack:
 
     def pop(self) -> int:
         if self.is_empty():
-            raise IndexError
+            raise IndexError('Стек пуст.')
         return self.items.pop()
 
 
@@ -27,9 +27,9 @@ operators = {
 }
 
 
-def get_result(data: str) -> int:
+def get_result(reverse_polish_notation: str) -> int:
     stack = Stack()
-    for element in data:
+    for element in reverse_polish_notation:
         if element in operators:
             num1, num2 = stack.pop(), stack.pop()
             result = operators[element](num2, num1)
